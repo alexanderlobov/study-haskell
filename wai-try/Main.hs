@@ -13,7 +13,7 @@ app request respond = respond $ case rawPathInfo request of
     "/raw/" -> plainIndex
     _ -> notFound
 
-pathToIndex = "/home/alex/src/haskell/wai-try/app/index.html"
+pathToIndex = "/home/alex/src/git/study-haskell/wai-try/index.html"
 
 index :: Response
 index = responseFile

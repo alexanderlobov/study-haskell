@@ -4,7 +4,6 @@ synopsis:            Initial project template from stack
 description:         Please see README.md
 homepage:            https://github.com/githubuser/wai-try#readme
 license:             BSD3
-license-file:        LICENSE
 author:              Author name here
 maintainer:          example@example.com
 copyright:           2016 Author name here
@@ -14,7 +13,6 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 executable wai-try-exe
-  hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
