@@ -26,6 +26,8 @@ library
                      Handler.Profile
                      Handler.Echo
                      Handler.Mirror
+                     Handler.Blog
+                     Handler.Article
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
