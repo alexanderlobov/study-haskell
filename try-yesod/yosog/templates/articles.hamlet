@@ -5,9 +5,9 @@ $else
     <ul>
         $forall Entity articleId article <- articles
             <li>
-                <a href=@{ArticleR articleId} > #{articleTitle article}
+                <a href=@{ArticleR articleId} >#{articleTitle article}
 <hr>
-    <form method=post enctype=${enctype}>
-    ^{articleWidget}
-    <div>
-        <input type=submit value="Post New Article">
+    <form method=post action=@{BlogR} enctype=#{enctype}>
+        ^{articleWidget}
+        <div>
+            <input type=submit value="Post New Article">
