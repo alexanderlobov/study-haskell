@@ -1,3 +1,6 @@
 .stack-work
 *~
 *.swp
+*.hi
+*.o
+main
