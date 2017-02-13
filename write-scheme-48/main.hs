@@ -2,6 +2,7 @@ module Main where
 import Text.ParserCombinators.Parsec hiding (spaces)
 import System.Environment
 import Control.Monad
+import Numeric
 
 -- import Data.List as L
 
@@ -44,13 +45,29 @@ parseAtom = do
                 "#f" -> Bool False
                 _ -> Atom atom
 
+simpleNumber :: Parser Integer
+simpleNumber = liftM read $ many1 digit
+
+hexNumber :: Parser Integer
+hexNumber = do
+    s <- many1 hexDigit
+    case readHex s of
+        [(n, "")] -> return n
+        _ -> fail "wrong hex number"
+
+numberWithRadixPrefix :: Parser Integer
+numberWithRadixPrefix =
+      (char 'd' >> simpleNumber)
+  <|> (char 'x' >> hexNumber)
+
 parseNumber :: Parser LispVal
-parseNumber = liftM (Number . read) $ many1 digit
+parseNumber = (liftM (Number . read) $ many1 digit)
+          <|> (liftM Number (char '#' >> numberWithRadixPrefix))
 
 parseExpr :: Parser LispVal
-parseExpr = parseAtom
-        <|> parseString
+parseExpr = parseString
         <|> parseNumber
+        <|> parseAtom
 
 readExpr :: String -> String
 readExpr input = case parse parseExpr "lisp" input of
