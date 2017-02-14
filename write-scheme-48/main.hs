@@ -15,15 +15,15 @@ data LispVal = Atom String
              | Bool Bool
     deriving Show
 
-escapeChar :: Parser Char
-escapeChar =
+escapedChar :: Parser Char
+escapedChar =
     choice $ zipWith (\code replacement -> char code >> return replacement)
                      ['n',  'r',  't',  '\\', '"']
                      ['\n', '\r', '\t', '\\', '"']
 
 stringChar :: Parser Char
 stringChar = do
-    char '\\' >> (char '"' <|> return '\\')
+    char '\\' >> (escapedChar <|> return '\\')
     <|> noneOf "\""
 
 parseString :: Parser LispVal
