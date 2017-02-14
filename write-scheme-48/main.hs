@@ -34,7 +34,7 @@ parseString = do
     return $ String x
 
 symbol :: Parser Char
-symbol = oneOf "!#$%&|*+-/:<=>?@^_~"
+symbol = oneOf "!$%&|*+-/:<=>?@^_~"
 
 parseAtom :: Parser LispVal
 parseAtom = do
