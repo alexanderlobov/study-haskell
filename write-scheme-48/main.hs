@@ -13,6 +13,7 @@ data LispVal = Atom String
              | Number Integer
              | String String
              | Bool Bool
+             | Character Char
     deriving Show
 
 escapedChar :: Parser Char
@@ -40,11 +41,12 @@ parseAtom :: Parser LispVal
 parseAtom = do
     first <- letter <|> symbol
     rest <- many (letter <|> digit <|> symbol)
-    let atom = first:rest
-    return $ case atom of
-                "#t" -> Bool True
-                "#f" -> Bool False
-                _ -> Atom atom
+    return $ Atom (first:rest)
+
+parseBool :: Parser LispVal
+parseBool =
+    char '#' >>
+    ((char 't' >> return (Bool True)) <|> (char 'f' >> return (Bool False)))
 
 readBin :: Num a => ReadS a
 readBin = readInt 2 (`elem` "01") digitToInt
@@ -78,10 +80,19 @@ parseNumber :: Parser LispVal
 parseNumber = (liftM (Number . read) $ many1 digit)
           <|> try (liftM Number (char '#' >> numberWithRadixPrefix))
 
+parseCharacter :: Parser LispVal
+parseCharacter = string "#\\" >>
+     (   (try (string "space") >> return (Character ' '))
+     <|> (try (string "newline") >> return (Character '\n'))
+     <|> (anyChar >>= \c -> notFollowedBy alphaNum >> return (Character c))
+     )
+
 parseExpr :: Parser LispVal
 parseExpr = parseString
         <|> parseNumber
         <|> parseAtom
+        <|> try parseBool
+        <|> parseCharacter
 
 readExpr :: String -> String
 readExpr input = case parse parseExpr "lisp" input of
