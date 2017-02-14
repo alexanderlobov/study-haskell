@@ -3,6 +3,7 @@ import Text.ParserCombinators.Parsec hiding (spaces)
 import System.Environment
 import Control.Monad
 import Numeric
+import Data.Char
 
 -- import Data.List as L
 
@@ -45,8 +46,8 @@ parseAtom = do
                 "#f" -> Bool False
                 _ -> Atom atom
 
-simpleNumber :: Parser Integer
-simpleNumber = liftM read $ many1 digit
+decNumber :: Parser Integer
+decNumber = liftM read $ many1 digit
 
 hexNumber :: Parser Integer
 hexNumber = do
@@ -55,10 +56,29 @@ hexNumber = do
         [(n, "")] -> return n
         _ -> fail "wrong hex number"
 
+octNumber :: Parser Integer
+octNumber = do
+    s <- many1 octDigit
+    case readOct s of
+        [(n,"")] -> return n
+        _ -> fail "wrong oct number"
+
+readBin :: Num a => ReadS a
+readBin = readInt 2 (`elem` "01") digitToInt
+
+binNumber :: Parser Integer
+binNumber = do
+    s <- many1 $ oneOf "01"
+    case readBin s of
+        [(n,"")] -> return n
+        _ -> fail "wrong bin number"
+
 numberWithRadixPrefix :: Parser Integer
 numberWithRadixPrefix =
-      (char 'd' >> simpleNumber)
+      (char 'd' >> decNumber)
   <|> (char 'x' >> hexNumber)
+  <|> (char 'o' >> octNumber)
+  <|> (char 'b' >> binNumber)
 
 parseNumber :: Parser LispVal
 parseNumber = (liftM (Number . read) $ many1 digit)
