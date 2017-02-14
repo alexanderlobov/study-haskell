@@ -46,32 +46,26 @@ parseAtom = do
                 "#f" -> Bool False
                 _ -> Atom atom
 
+readBin :: Num a => ReadS a
+readBin = readInt 2 (`elem` "01") digitToInt
+
+readNumber :: (ReadS Integer) -> String -> String -> Parser Integer
+readNumber reader name s =
+    case reader s of
+        [(n,"")] -> return n
+        _ -> fail "wrong"
+
 decNumber :: Parser Integer
 decNumber = liftM read $ many1 digit
 
 hexNumber :: Parser Integer
-hexNumber = do
-    s <- many1 hexDigit
-    case readHex s of
-        [(n, "")] -> return n
-        _ -> fail "wrong hex number"
+hexNumber = many1 hexDigit >>= readNumber readHex "hex"
 
 octNumber :: Parser Integer
-octNumber = do
-    s <- many1 octDigit
-    case readOct s of
-        [(n,"")] -> return n
-        _ -> fail "wrong oct number"
-
-readBin :: Num a => ReadS a
-readBin = readInt 2 (`elem` "01") digitToInt
+octNumber = many1 octDigit >>= readNumber readOct "oct"
 
 binNumber :: Parser Integer
-binNumber = do
-    s <- many1 $ oneOf "01"
-    case readBin s of
-        [(n,"")] -> return n
-        _ -> fail "wrong bin number"
+binNumber = (many1 $ oneOf "01") >>= readNumber readBin "bin"
 
 numberWithRadixPrefix :: Parser Integer
 numberWithRadixPrefix =
