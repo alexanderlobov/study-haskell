@@ -82,7 +82,7 @@ numberWithRadixPrefix =
 
 parseNumber :: Parser LispVal
 parseNumber = (liftM (Number . read) $ many1 digit)
-          <|> (liftM Number (char '#' >> numberWithRadixPrefix))
+          <|> try (liftM Number (char '#' >> numberWithRadixPrefix))
 
 parseExpr :: Parser LispVal
 parseExpr = parseString
